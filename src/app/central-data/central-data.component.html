@@ -1,0 +1,11 @@
+<div *ngIf="libreData">
+
+<div class="top" style="font-size: 1em">{{libreData.timestamp | date : 'shortTime'}}</div>
+<div class="top20" style="font-size: 1em">{{average}}</div>
+
+<div class="centered mmol">
+  <span [ngClass]="status">{{libreData.glucoseMmol}}</span>
+</div>
+
+</div>
+

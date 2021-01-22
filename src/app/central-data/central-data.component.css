@@ -1,0 +1,43 @@
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+
+.top {
+  font-family: Arial, 'sans-serif';
+  color: antiquewhite;
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  /* bring your own prefixes */
+  transform: translate(-10%, -10%);
+}
+
+.top20 {
+  font-family: Arial, 'sans-serif';
+  color: antiquewhite;
+  position: fixed;
+  top: 20%;
+  left: 10%;
+  /* bring your own prefixes */
+  transform: translate(-20%, -10%);
+}
+
+.mmol {
+  font-size: 20em;
+  font-family: Arial, 'sans-serif';
+  color: antiquewhite;
+}
+
+.red {
+  color: red;
+}
+
+.green {
+  color: green;
+}
+
+
