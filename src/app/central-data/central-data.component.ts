@@ -35,7 +35,7 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpClient.get('http://env-4074176.jcloud-ver-jpc.ik-server.com/data')
+    this.httpClient.get('https://env-4074176.jcloud-ver-jpc.ik-server.com/data')
       .pipe(
         first(),
         map( result => {
