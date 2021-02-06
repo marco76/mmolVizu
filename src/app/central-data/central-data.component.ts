@@ -3,6 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {first, map} from 'rxjs/operators';
 import {LibreData} from './libre-data';
 import {interval, Subscription, timer} from 'rxjs';
+import {AddKHFormComponent} from '../add-khform/add-khform.component';
+import {MatDialog} from '@angular/material/dialog';
 
 
 @Component({
@@ -14,18 +16,26 @@ import {interval, Subscription, timer} from 'rxjs';
 export class CentralDataComponent implements OnInit, OnDestroy {
   libreData: LibreData;
   timerSubscription: Subscription;
+  timerSeries: Subscription;
   status: string;
   queue: number[] = [];
-  average: string;
+  lastElements: LibreData[] = [];
+  last5: LibreData;
+  last10: LibreData;
+  timeStatus: string;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, public dialog: MatDialog) { }
 
   ngOnInit(): void {
-
-    const seconds = interval(30000);
     this.timerSubscription = timer(10, 10000).pipe(
       map(() => {
         this.loadData();
+      })
+    ).subscribe();
+
+    this.timerSeries = timer(10, 60000).pipe(
+      map(() => {
+        this.loadLastElements();
       })
     ).subscribe();
 
@@ -34,8 +44,35 @@ export class CentralDataComponent implements OnInit, OnDestroy {
 
   }
 
+  loadLastElements(): void {
+    this.httpClient.get('http://env-4074176.jcloud-ver-jpc.ik-server.com/last-values/10')
+      .pipe(
+        first(),
+        map( result => {
+          this.lastElements = result as LibreData[];
+          this.last10 = this.getLastValue(6);
+          this.last5 = this.getLastValue(3);
+        })
+      )
+      .subscribe(data => {},
+        error => console.log('mmo: error:', error)) ;
+  }
+
+  getLastValue(position: number): LibreData {
+    if (position > this.lastElements.length) {
+      return;
+    }
+    const data = this.lastElements[position - 1];
+    data.glucoseMmol = (Math.round(parseInt(data.glucose, 10) / 18 * 100) / 100).toString();
+    data.date = new Date(data.timestamp);
+    const mmol = Number(data.glucoseMmol);
+    data.status = this.getStatus(mmol);
+
+    return {... data};
+  }
+
   loadData(): void {
-    this.httpClient.get('https://env-4074176.jcloud-ver-jpc.ik-server.com/data')
+    this.httpClient.get('http://env-4074176.jcloud-ver-jpc.ik-server.com/data')
       .pipe(
         first(),
         map( result => {
@@ -53,26 +90,73 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   prepareLibreData(): void {
     this.libreData.glucoseMmol = (Math.round(parseInt(this.libreData.glucose, 10) / 18 * 100) / 100).toString();
     this.libreData.date = new Date(this.libreData.timestamp);
-    const mmol = parseInt(this.libreData.glucoseMmol, 10);
-    if (mmol > 9.5) {
-      this.status = 'red';
-    } else
-    if (mmol > 4.0) {
-      this.status = 'green';
-    } else {
-      this.status = 'red';
-    }
+    const mmol = Number(this.libreData.glucoseMmol);
+    this.status = this.getStatus(mmol);
+    this.libreData.direction = this.getDirection();
 
     this.queue.push(mmol);
     if (this.queue.length > 5) {
       this.queue.shift();
     }
-    const average = (array) => array.reduce((a, b) => a + b) / array.length;
-    this.average = average(this.queue).toString();
+
+    if ((new Date().getTime() - 300000) >  Number(this.libreData.timestamp)) {
+      this.timeStatus = 'red';
+    } else {
+      this.timeStatus = '';
+    }
+  }
+
+  private getStatus(mmol: number): string {
+    if (mmol > 9.5) {
+      return  'red';
+    } else if (mmol > 4.0 && mmol < 5.0) {
+      return  'yellow';
+    } else if (mmol >= 5 && mmol <= 9.5) {
+      return  'green';
+    } else {
+      return 'red';
+    }
   }
 
   ngOnDestroy(): void {
     this.timerSubscription.unsubscribe();
+    this.timerSeries.unsubscribe();
   }
+
+  getDirection(): string {
+    const change = Number(this.libreData.glucoseMmol) - Number(this.last5.glucoseMmol);
+    if (change > 1.0) {
+      return '↑↑';
+    }
+
+    if (change >= 0.5) {
+      return '↑';
+    }
+
+    if (change < -1) {
+       return '↓↓';
+    }
+
+    if (change <= -0.5) {
+      return '↓';
+    }
+
+    return '';
+
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(AddKHFormComponent, {
+      width: '250px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      const dialogResult = result;
+      console.log('result', dialogResult);
+    });
+  }
+
 
 }

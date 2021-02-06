@@ -1,11 +1,25 @@
 <div *ngIf="libreData">
 
-<div class="top" style="font-size: 1em">{{libreData.timestamp | date : 'shortTime'}}</div>
-<div class="top20" style="font-size: 1em">{{average}}</div>
+<div class="top" style="font-size: 2em"
+     [class]="timeStatus">{{libreData.timestamp | date : 'shortTime'}}</div>
 
-<div class="centered mmol">
-  <span [ngClass]="status">{{libreData.glucoseMmol}}</span>
+<div class="mmol" style="padding-top: 0.7em; padding-left: 0.1em; display: flex; flex-direction: column">
+  <div [ngClass]="status" style="display: flex; flex-direction: row">
+    <div>{{libreData.glucoseMmol}}</div>
+    <div>{{libreData.direction}}</div>
+  </div>
+
+  <div>
+  <span *ngIf="lastElements.length >= 3" style="font-size: 0.4em; padding-left: 0.5em" [ngClass]="last5.status" >{{last5.glucoseMmol}}</span>
+  <span *ngIf="lastElements.length >= 6" style="font-size: 0.2em; padding-left: 1em" [ngClass]="last10.status">{{last10.glucoseMmol}}</span>
+  </div>
+
+  <div>
+    <mat-icon aria-hidden="false" aria-label="Mahlzeit" style="color: white" (click)="openDialog()">fastfood</mat-icon>
+  </div>
 </div>
+
+
 
 </div>
 

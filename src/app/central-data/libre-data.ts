@@ -4,4 +4,6 @@ export interface LibreData {
   timestamp: string;
   glucoseMmol?: string;
   date?: Date;
+  status?: string;
+  direction?: string;
 }
