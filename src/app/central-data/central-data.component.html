@@ -1,25 +1,36 @@
 <div *ngIf="libreData">
 
-<div class="top" style="font-size: 2em"
-     [class]="timeStatus">{{libreData.timestamp | date : 'shortTime'}}</div>
-
-<div class="mmol" style="padding-top: 0.7em; padding-left: 0.1em; display: flex; flex-direction: column">
-  <div [ngClass]="status" style="display: flex; flex-direction: row">
-    <div>{{libreData.glucoseMmol}}</div>
-    <div>{{libreData.direction}}</div>
+  <div class="main-menu">
+    <div
+         [class]="timeStatus">{{libreData.timestamp | date : 'HH:mm'}}
+    </div>
+    <div>
+      <mat-icon aria-hidden="false" aria-label="Mahlzeit" style="font-size: 1.5em; padding-left: 10px" (click)="openDialog()">fastfood</mat-icon>
+    </div>
   </div>
 
-  <div>
-  <span *ngIf="lastElements.length >= 3" style="font-size: 0.4em; padding-left: 0.5em" [ngClass]="last5.status" >{{last5.glucoseMmol}}</span>
-  <span *ngIf="lastElements.length >= 6" style="font-size: 0.2em; padding-left: 1em" [ngClass]="last10.status">{{last10.glucoseMmol}}</span>
-  </div>
+  <div class="container-wrapper">
 
-  <div>
-    <mat-icon aria-hidden="false" aria-label="Mahlzeit" style="color: white" (click)="openDialog()">fastfood</mat-icon>
-  </div>
+  <div class="container">
+    <div class="main-item mmol" [ngClass]="status">
+      {{libreData.glucoseMmol | number: '.2'}}
+    </div>
+    <div class="item-3-min"
+          *ngIf="lastElements.length >= 3"
+         [ngClass]="last5.status" >{{last5.glucoseMmol | number: '.2'}}</div>
+
+  <div class="item-5-min" *ngIf="lastElements.length >= 6"
+       [ngClass]="last10.status">{{last10.glucoseMmol | number: '.2'}}</div>
+
+</div>
+</div>
+<div class="carbs">
+  <mat-list>
+    <mat-list-item *ngFor="let food of lastFood" class="carbs">
+      {{food.dateTime | date: 'HH:mm'}}: {{food.quantity}} Kh
+    </mat-list-item>
+  </mat-list>
+</div>
 </div>
 
-
-
-</div>
 

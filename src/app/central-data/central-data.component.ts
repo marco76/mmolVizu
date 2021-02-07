@@ -5,6 +5,8 @@ import {LibreData} from './libre-data';
 import {interval, Subscription, timer} from 'rxjs';
 import {AddKHFormComponent} from '../add-khform/add-khform.component';
 import {MatDialog} from '@angular/material/dialog';
+import {environment} from '../../environments/environment';
+import {Carbs} from '../add-khform/carbs';
 
 
 @Component({
@@ -17,12 +19,15 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   libreData: LibreData;
   timerSubscription: Subscription;
   timerSeries: Subscription;
+  timerLastCarbs: Subscription;
   status: string;
   queue: number[] = [];
   lastElements: LibreData[] = [];
   last5: LibreData;
   last10: LibreData;
   timeStatus: string;
+
+  lastFood: Carbs[] = [];
 
   constructor(private httpClient: HttpClient, public dialog: MatDialog) { }
 
@@ -36,6 +41,11 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     this.timerSeries = timer(10, 60000).pipe(
       map(() => {
         this.loadLastElements();
+      })
+    ).subscribe();
+    this.timerLastCarbs = timer(10, 60000).pipe(
+      map(() => {
+        this.loadLastCarbs();
       })
     ).subscribe();
 
@@ -72,7 +82,7 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpClient.get('http://env-4074176.jcloud-ver-jpc.ik-server.com/data')
+    this.httpClient.get(environment.getServer + 'data')
       .pipe(
         first(),
         map( result => {
@@ -107,6 +117,10 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   }
 
   private getStatus(mmol: number): string {
+    if (this.timeStatus === 'red') {
+      return 'time-status-not-valid';
+    }
+
     if (mmol > 9.5) {
       return  'red';
     } else if (mmol > 4.0 && mmol < 5.0) {
@@ -121,6 +135,7 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.timerSubscription.unsubscribe();
     this.timerSeries.unsubscribe();
+    this.timerLastCarbs.unsubscribe();
   }
 
   getDirection(): string {
@@ -156,6 +171,16 @@ export class CentralDataComponent implements OnInit, OnDestroy {
       const dialogResult = result;
       console.log('result', dialogResult);
     });
+  }
+
+  loadLastCarbs(): void {
+    this.httpClient.get(environment.postServer + 'carbs/last')
+      .pipe(
+        first()
+      )
+      .subscribe(
+      result => this.lastFood = result as Carbs[]
+    );
   }
 
 

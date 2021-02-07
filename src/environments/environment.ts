@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  postServer: 'http://localhost:8080/',
+  getServer: 'http://env-4074176.jcloud-ver-jpc.ik-server.com/'
 };
 
 /*
