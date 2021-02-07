@@ -7,6 +7,8 @@ import {AddKHFormComponent} from '../add-khform/add-khform.component';
 import {MatDialog} from '@angular/material/dialog';
 import {environment} from '../../environments/environment';
 import {Carbs} from '../add-khform/carbs';
+import {AddInsulinComponent} from '../add-insulin/add-insulin.component';
+import {Insulin} from '../add-insulin/insulin';
 
 
 @Component({
@@ -20,6 +22,7 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   timerSubscription: Subscription;
   timerSeries: Subscription;
   timerLastCarbs: Subscription;
+  timerLastInsulin: Subscription;
   status: string;
   queue: number[] = [];
   lastElements: LibreData[] = [];
@@ -28,6 +31,7 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   timeStatus: string;
 
   lastFood: Carbs[] = [];
+  lastInsulin: Insulin[] = [];
 
   constructor(private httpClient: HttpClient, public dialog: MatDialog) { }
 
@@ -46,6 +50,12 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     this.timerLastCarbs = timer(10, 60000).pipe(
       map(() => {
         this.loadLastCarbs();
+      })
+    ).subscribe();
+
+    this.timerLastInsulin = timer(10, 600000).pipe(
+      map(() => {
+        this.loadLastInsulin();
       })
     ).subscribe();
 
@@ -136,6 +146,7 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     this.timerSubscription.unsubscribe();
     this.timerSeries.unsubscribe();
     this.timerLastCarbs.unsubscribe();
+    this.timerLastInsulin.unsubscribe();
   }
 
   getDirection(): string {
@@ -173,6 +184,19 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     });
   }
 
+  openDialogInsulin(): void {
+    const dialogRef = this.dialog.open(AddInsulinComponent, {
+      width: '250px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      const dialogResult = result;
+      console.log('result', dialogResult);
+    });
+  }
+
   loadLastCarbs(): void {
     this.httpClient.get(environment.postServer + 'carbs/last')
       .pipe(
@@ -181,6 +205,15 @@ export class CentralDataComponent implements OnInit, OnDestroy {
       .subscribe(
       result => this.lastFood = result as Carbs[]
     );
+  }
+  loadLastInsulin(): void {
+    this.httpClient.get(environment.postServer + 'insulin/last')
+      .pipe(
+        first()
+      )
+      .subscribe(
+        result => this.lastInsulin = result as Insulin[]
+      );
   }
 
 

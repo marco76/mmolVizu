@@ -13,13 +13,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import {MatListModule} from '@angular/material/list';
+import { AddInsulinComponent } from './add-insulin/add-insulin.component';
+import {MatSliderModule} from '@angular/material/slider';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     CentralDataComponent,
-    AddKHFormComponent
+    AddKHFormComponent,
+    AddInsulinComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +34,8 @@ import {MatListModule} from '@angular/material/list';
     MatListModule,
     FormsModule,
     MatDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    MatSliderModule
 
   ],
   providers: [],

@@ -1,0 +1,30 @@
+/* Ionic Variables and Theming. */
+/* This is just a placeholder file For more info, please see: */
+/* https://ionicframework.com/docs/theming/basics */
+
+/* To quickly generate your own theme, check out the color generator */
+/* https://ionicframework.com/docs/theming/color-generator */
+/* Set variables for all modes */
+:root {
+
+  /* Set the background of the entire app */
+  --ion-background-color: #000;
+
+  /* Set the font family of the entire app */
+  --ion-font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", sans-serif;
+}
+
+.ion-toolbar {
+  --ion-background-color: #000;
+}
+
+/* Set text color of the entire app for iOS only */
+.ios {
+  --ion-text-color: #000;
+}
+
+/* Set text color of the entire app for Material Design only */
+.md {
+  --ion-text-color: #222;
+}
+

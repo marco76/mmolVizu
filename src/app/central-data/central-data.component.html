@@ -5,6 +5,7 @@
          [class]="timeStatus">{{libreData.timestamp | date : 'HH:mm'}}
     </div>
     <div>
+      <mat-icon aria-hidden="false" aria-label="Insulin" style="font-size: 1.5em; padding-right: 40px" (click)="openDialogInsulin()">colorize</mat-icon>
       <mat-icon aria-hidden="false" aria-label="Mahlzeit" style="font-size: 1.5em; padding-left: 10px" (click)="openDialog()">fastfood</mat-icon>
     </div>
   </div>
@@ -24,13 +25,17 @@
 
 </div>
 </div>
+  <div class="carbs">
+    <mat-icon>colorize</mat-icon>
+    <span *ngFor="let insulin of lastInsulin" class="carbs">
+      {{insulin.dateTime | date: 'HH:mm'}}: {{insulin.quantity}} Kh |
+    </span>
+  </div>
 <div class="carbs">
-  <mat-list>
-    <mat-list-item *ngFor="let food of lastFood" class="carbs">
-      {{food.dateTime | date: 'HH:mm'}}: {{food.quantity}} Kh
-    </mat-list-item>
-  </mat-list>
-</div>
+   <mat-icon>fastfood</mat-icon>
+    <span *ngFor="let food of lastFood" class="carbs">
+      {{food.dateTime | date: 'HH:mm'}}: {{food.quantity}} Kh |
+    </span>
 </div>
 
-
+</div>

@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>KH gegeben</h1>
+<div mat-dialog-content>
+  <p>Wieviel KH?</p>
+  <mat-form-field>
+    <mat-label></mat-label>
+    <input matInput [(ngModel)]="kh">
+  </mat-form-field>
+  <div style="padding-bottom: 10px">
+    <button mat-raised-button (click)="onSaveCustomFood()">Speichern</button>
+  </div>
+  <div>
+    <mat-list style="font-size: 1.5em">
+      <mat-list-item (click)="onSaveFood('Traubenzucker', 2)"><mat-icon>add</mat-icon> 1 Traubenzucker</mat-list-item>
+      <mat-list-item (click)="onSaveFood('Apfel', 1)"><mat-icon>add</mat-icon>10g Apfel (1g KH)</mat-list-item>
+    </mat-list>
+  </div>
+</div>
