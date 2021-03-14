@@ -96,7 +96,6 @@ export class CentralDataComponent implements OnInit, OnDestroy {
       .pipe(
         first(),
         map( result => {
-          console.log(result);
           this.libreData = result as LibreData;
           if (this.libreData.timestamp) {
             this.prepareLibreData();
@@ -115,10 +114,11 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     this.libreData.direction = this.getDirection();
 
     this.queue.push(mmol);
-    if (this.queue.length > 5) {
+    if (this.queue.length > 10) {
       this.queue.shift();
     }
 
+    // after 5 minutes without signal show an alert
     if ((new Date().getTime() - 300000) >  Number(this.libreData.timestamp)) {
       this.timeStatus = 'red';
     } else {
@@ -131,12 +131,14 @@ export class CentralDataComponent implements OnInit, OnDestroy {
       return 'time-status-not-valid';
     }
 
-    if (mmol > 9.5) {
+    if (mmol >= 10.0) {
       return  'red';
-    } else if (mmol > 4.0 && mmol < 5.0) {
+    } else if (mmol >= 9) {
       return  'yellow';
-    } else if (mmol >= 5 && mmol <= 9.5) {
+    } else if (mmol >= 4.7) {
       return  'green';
+    } else if (mmol >= 4.2) {
+        return  'yellow';
     } else {
       return 'red';
     }
