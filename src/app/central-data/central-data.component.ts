@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {first, map} from 'rxjs/operators';
 import {LibreData} from './libre-data';
-import {interval, Subscription, timer} from 'rxjs';
+import {Subscription, timer} from 'rxjs';
 import {AddKHFormComponent} from '../add-khform/add-khform.component';
 import {MatDialog} from '@angular/material/dialog';
 import {environment} from '../../environments/environment';
@@ -203,7 +203,9 @@ export class CentralDataComponent implements OnInit, OnDestroy {
         first()
       )
       .subscribe(
-      result => this.lastFood = result as Carbs[]
+      result => {
+        this.lastFood = result as Carbs[];
+      }
     );
   }
   loadLastInsulin(): void {
