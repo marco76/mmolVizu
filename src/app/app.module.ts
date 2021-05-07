@@ -15,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import {MatListModule} from '@angular/material/list';
 import { AddInsulinComponent } from './add-insulin/add-insulin.component';
 import {MatSliderModule} from '@angular/material/slider';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 
 @NgModule({
@@ -35,8 +37,10 @@ import {MatSliderModule} from '@angular/material/slider';
     FormsModule,
     MatDialogModule,
     MatButtonModule,
-    MatSliderModule
-
+    MatSliderModule,
+    ServiceWorkerModule.register('ngsw-worker.js',
+      { enabled: environment.production,
+        registrationStrategy: 'registerImmediately'})
   ],
   providers: [],
   bootstrap: [AppComponent]

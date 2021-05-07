@@ -9,6 +9,7 @@ import {environment} from '../../environments/environment';
 import {Carbs} from '../add-khform/carbs';
 import {AddInsulinComponent} from '../add-insulin/add-insulin.component';
 import {Insulin} from '../add-insulin/insulin';
+import {InsulinResult} from './insulinResult';
 
 
 @Component({
@@ -26,9 +27,12 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   status: string;
   queue: number[] = [];
   lastElements: LibreData[] = [];
+  totalInsulin: number;
+  activeInsulin: Insulin[] = [];
   last5: LibreData;
   last10: LibreData;
   timeStatus: string;
+  direction: string;
 
   lastFood: Carbs[] = [];
   lastInsulin: Insulin[] = [];
@@ -44,14 +48,17 @@ export class CentralDataComponent implements OnInit, OnDestroy {
 
     this.timerSeries = timer(10, 60000).pipe(
       map(() => {
-        this.loadLastElements();
+       this.loadLastElements();
+       this.loadActiveInsulin();
       })
     ).subscribe();
+    /*
     this.timerLastCarbs = timer(10, 60000).pipe(
       map(() => {
         this.loadLastCarbs();
       })
     ).subscribe();
+     */
 
     this.timerLastInsulin = timer(10, 600000).pipe(
       map(() => {
@@ -64,8 +71,22 @@ export class CentralDataComponent implements OnInit, OnDestroy {
 
   }
 
+  loadActiveInsulin(): void {
+    this.httpClient.get('https://env-4074176.jcloud-ver-jpc.ik-server.com/insulin/active')
+      .pipe(
+        first(),
+        map( result => {
+          let queryResult = result as InsulinResult;
+          this.totalInsulin = queryResult.totalInsulin;
+          this.activeInsulin = queryResult.insulin;
+        })
+      )
+      .subscribe(data => {},
+        error => console.log('mmo: error:', error)) ;
+  }
+
   loadLastElements(): void {
-    this.httpClient.get('http://env-4074176.jcloud-ver-jpc.ik-server.com/last-values/10')
+    this.httpClient.get('https://env-4074176.jcloud-ver-jpc.ik-server.com/last-values/15')
       .pipe(
         first(),
         map( result => {
@@ -92,11 +113,12 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpClient.get(environment.getServer + 'data')
+    this.httpClient.get(environment.getServer + 'data-direction')
       .pipe(
         first(),
         map( result => {
-          this.libreData = result as LibreData;
+          this.libreData = (result as any).libreData as LibreData;
+          this.direction = (result as any).direction;
           if (this.libreData.timestamp) {
             this.prepareLibreData();
           }
@@ -131,11 +153,11 @@ export class CentralDataComponent implements OnInit, OnDestroy {
       return 'time-status-not-valid';
     }
 
-    if (mmol >= 10.0) {
+    if (mmol >= 9.5) {
       return  'red';
-    } else if (mmol >= 9) {
+    } else if (mmol >= 8.5) {
       return  'yellow';
-    } else if (mmol >= 4.7) {
+    } else if (mmol >= 4.6) {
       return  'green';
     } else if (mmol >= 4.2) {
         return  'yellow';
@@ -151,9 +173,22 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     this.timerLastInsulin.unsubscribe();
   }
 
+  getArrow(): string {
+    switch (this.direction) {
+      case '3UP': return  '↑↑';
+      case '2UP': return '↑';
+      case 'UP': return '+';
+      case 'DOWN': return '-';
+      case 'UNDEFINED': return '?';
+      case '2DOWN': return '↓';
+      case '3DOWN': return '↓↓';
+      case 'FLAT': return '=';
+    }
+  }
+
   getDirection(): string {
     const change = Number(this.libreData.glucoseMmol) - Number(this.last5.glucoseMmol);
-    if (change > 1.0) {
+    if (change > 30) {
       return '↑↑';
     }
 

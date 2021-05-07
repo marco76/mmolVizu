@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   postServer: 'http://localhost:8080/',
-  getServer: 'http://env-4074176.jcloud-ver-jpc.ik-server.com/'
+  getServer: 'https://env-4074176.jcloud-ver-jpc.ik-server.com/'
 };
 
 /*

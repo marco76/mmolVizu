@@ -19,6 +19,10 @@
           *ngIf="lastElements.length >= 3"
          [ngClass]="last5.status" >{{last5.glucoseMmol | number: '.2'}}</div>
 
+    <div class="item-arrows">
+      {{getArrow()}}
+    </div>
+
   <div class="item-5-min" *ngIf="lastElements.length >= 6"
        [ngClass]="last10.status">{{last10.glucoseMmol | number: '.2'}}</div>
 
@@ -26,7 +30,8 @@
 </div>
   <div class="carbs">
     <mat-icon>colorize</mat-icon>
-    <span *ngFor="let insulin of lastInsulin" class="carbs">
+    [akt. {{totalInsulin}}]
+    <span *ngFor="let insulin of activeInsulin" class="carbs">
       <span style="color: gray; font-size: x-small">{{insulin.dateTime | date: 'HH:mm d.M'}}:</span> {{insulin.quantity}} IU |
     </span>
   </div>
