@@ -37,9 +37,21 @@ export class CentralDataComponent implements OnInit, OnDestroy {
   lastFood: Carbs[] = [];
   lastInsulin: Insulin[] = [];
 
+  dataForChart: number[] = [];
+  xAxisData = [];
+  options: any;
+
   constructor(private httpClient: HttpClient, public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    const xAxisData = [];
+
+    /**
+    for (let i = 0; i < 100; i++) {
+      xAxisData.push( + i);
+      data1.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5);
+    }
+**/
     this.timerSubscription = timer(10, 10000).pipe(
       map(() => {
         this.loadData();
@@ -67,8 +79,53 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     ).subscribe();
 
    // this.libreData = {glucose: '172', timestamp: '1611348527475', serial: '3MH003PDJ9H'};
+  }
 
-
+  updateChart(): void {
+    this.options = {
+      tooltip: {},
+      grid: {
+        containLabel: true,
+        left: 10
+      },
+      xAxis: {
+        data: this.xAxisData,
+        silent: true,
+        splitLine: {
+          show: false,
+        },
+        show: false,
+      },
+      yAxis: {
+        min: Math.min(... this.dataForChart),
+        max: Math.max(... this.dataForChart),
+        axisLabel: {
+          fontSize: 20
+        },
+        axisLine: {
+          show: false,
+          lineStyle: {
+          }
+        },
+        splitLine: {
+          show: false
+        }
+      },
+      series: [
+        {
+          name: '',
+          type: 'line',
+          smooth: true,
+          data: this.dataForChart,
+          animationDelay: (idx) => idx * 10,
+          lineStyle: {
+            width: 5
+          }
+        },
+      ],
+      animationEasing: 'elasticOut',
+      animationDelayUpdate: (idx) => idx * 5,
+    };
   }
 
   loadActiveInsulin(): void {
@@ -93,6 +150,17 @@ export class CentralDataComponent implements OnInit, OnDestroy {
           this.lastElements = result as LibreData[];
           this.last10 = this.getLastValue(6);
           this.last5 = this.getLastValue(3);
+          const lastElementsForCharts = this.lastElements.reverse();
+          this.dataForChart =
+            lastElementsForCharts.map( element => (Math.round(parseInt(element.glucose, 10) / 18 * 100) / 100));
+          this.xAxisData = [];
+          lastElementsForCharts.forEach(element => {
+            const date = new Date(Number.parseInt(element.timestamp, 10));
+            this.xAxisData.push(date.getHours() + ':' + date.getMinutes());
+          });
+
+          this.updateChart();
+
         })
       )
       .subscribe(data => {},
@@ -153,9 +221,9 @@ export class CentralDataComponent implements OnInit, OnDestroy {
       return 'time-status-not-valid';
     }
 
-    if (mmol >= 9.5) {
+    if (mmol >= 9.3) {
       return  'red';
-    } else if (mmol >= 8.5) {
+    } else if (mmol >= 8.4) {
       return  'yellow';
     } else if (mmol >= 4.6) {
       return  'green';
@@ -177,12 +245,12 @@ export class CentralDataComponent implements OnInit, OnDestroy {
     switch (this.direction) {
       case '3UP': return  '↑↑';
       case '2UP': return '↑';
-      case 'UP': return '+';
-      case 'DOWN': return '-';
-      case 'UNDEFINED': return '?';
+      case 'UP': return '↑';
+      case 'DOWN': return '↓';
+      case 'UNDEFINED': return '';
       case '2DOWN': return '↓';
       case '3DOWN': return '↓↓';
-      case 'FLAT': return '=';
+      case 'FLAT': return '';
     }
   }
 

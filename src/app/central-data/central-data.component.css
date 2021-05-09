@@ -138,3 +138,10 @@
   text-decoration: line-through;
 }
 
+.demo-chart {
+  height: 300px;
+  max-width: 600px;
+  padding-left: 10px;
+  width: 80vw;
+}
+

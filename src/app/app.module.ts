@@ -17,6 +17,7 @@ import { AddInsulinComponent } from './add-insulin/add-insulin.component';
 import {MatSliderModule} from '@angular/material/slider';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import {NgxEchartsModule} from 'ngx-echarts';
 
 
 @NgModule({
@@ -38,6 +39,9 @@ import { environment } from '../environments/environment';
     MatDialogModule,
     MatButtonModule,
     MatSliderModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts')
+    }),
     ServiceWorkerModule.register('ngsw-worker.js',
       { enabled: environment.production,
         registrationStrategy: 'registerImmediately'})
